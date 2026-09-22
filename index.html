@@ -40,7 +40,7 @@
                 </div>
                 <div>
                     <h1 class="font-brand text-2xl font-black tracking-wider bg-gradient-to-r from-cyan-400 via-teal-300 to-rumble bg-clip-text text-transparent">LOS VIEJOS LOCOS</h1>
-                    <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Live Stream Radar & Crew Hub</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Live Stream Radar & Cloud Hub</p>
                 </div>
             </div>
             
@@ -80,9 +80,6 @@
                 </button>
                 <button type="button" onclick="switchTab('widgets')" id="btn-widgets" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap">
                     <i class="fa-solid fa-code mr-2"></i> Widgets
-                </button>
-                <button type="button" onclick="switchTab('users')" id="btn-users" class="hidden flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-user-shield mr-2"></i> Manage Users
                 </button>
             </div>
 
@@ -202,35 +199,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- TAB 4: MANAGE USERS (Admin Only) -->
-        <div id="tab-users" class="hidden space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold font-brand text-slate-100">Editor Account Management</h2>
-                    <p class="text-xs text-slate-400">Create editor accounts who can view the roster.</p>
-                </div>
-                <button type="button" onclick="openUserModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-2 cursor-pointer">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>Create Editor Account</span>
-                </button>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
-                <table class="w-full text-left border-collapse text-sm">
-                    <thead>
-                        <tr class="border-b border-slate-800 bg-slate-950/50 text-xs text-slate-400 uppercase">
-                            <th class="p-4">Username</th>
-                            <th class="p-4">Role</th>
-                            <th class="p-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body">
-                        <!-- Populated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </main>
 
     <!-- Modal: Add / Edit Streamer (Admin Only) -->
@@ -244,7 +212,7 @@
             </div>
             
             <form id="streamerForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                <input type="hidden" id="editIndex" value="-1">
+                <input type="hidden" id="editId" value="">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Streamer / Channel Name</label>
                     <input type="text" id="streamerName" required placeholder="e.g. Voltrix" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
@@ -262,8 +230,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Avatar Image or GIF</label>
-                        <input type="file" id="streamerAvatarFile" accept="image/png, image/jpeg, image/gif" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500 file:text-slate-950 hover:file:bg-cyan-400 cursor-pointer">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Avatar Image URL or Direct Link</label>
+                        <input type="url" id="streamerAvatarUrl" required placeholder="https://image-link.com/avatar.jpg" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
                     </div>
                 </div>
 
@@ -274,7 +242,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Description (What do they stream?)</label>
-                    <textarea id="streamerDesc" rows="2" placeholder="Playing retro games, D&D campaigns, and community multiplayer..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+                    <textarea id="streamerDesc" rows="2" placeholder="Playing retro games, D&D campaigns..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
                 </div>
 
                 <div>
@@ -302,83 +270,69 @@
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Select Account</label>
-                    <select id="authSelectUser" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"></select>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Select Access Mode</label>
+                    <select id="authSelectUser" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                        <option value="Admin">Admin (Full Control)</option>
+                        <option value="PublicViewer">Public Viewer (Read Only)</option>
+                    </select>
                 </div>
                 <div id="authPasswordContainer">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" id="authPassword" placeholder="Enter account password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Admin Password</label>
+                    <input type="password" id="authPassword" placeholder="Enter admin password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
                 </div>
-                <button type="button" onclick="handleLogin()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-all cursor-pointer">Log In</button>
+                <button type="button" onclick="handleLogin()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-all cursor-pointer">Confirm Access</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal: Create Editor User (Admin Only) -->
-    <div id="userModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-6 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <h3 class="font-bold text-lg text-slate-100 font-brand">Create Editor Account</h3>
-                <button type="button" onclick="closeUserModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-slate-200 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="userForm" onsubmit="handleUserFormSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Username</label>
-                    <input type="text" id="newUsername" required placeholder="e.g. ViewerFriend" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" id="newUserPassword" required placeholder="Password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
-                </div>
-                <div class="flex space-x-3 pt-2">
-                    <button type="button" onclick="closeUserModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl text-sm cursor-pointer">Cancel</button>
-                    <button type="submit" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-sm cursor-pointer">Save User</button>
-                </div>
-            </form>
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-auto">
-        <p>Los Viejos Locos Stream Radar &bull; Built for creators and communities.</p>
+        <p>Los Viejos Locos Stream Radar &bull; Cloud Powered.</p>
     </footer>
 
-    <!-- JavaScript Application Logic -->
-    <script>
-        // State Initialization
-        let streamers = JSON.parse(localStorage.getItem('viejos_locos_streamers')) || [];
-        
-        let users = JSON.parse(localStorage.getItem('viejos_locos_users')) || [
-            { username: 'Admin', role: 'admin', password: 'password123' }
-        ];
+    <!-- Firebase SDK Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        let currentUser = JSON.parse(localStorage.getItem('viejos_locos_current_user')) || users[0];
+        // Your Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1fERlXGxzkW9vNIDvpT4DvEzg73ZckPU",
+            authDomain: "los-viejos-locos.firebaseapp.com",
+            projectId: "los-viejos-locos",
+            storageBucket: "los-viejos-locos.firebasestorage.app",
+            messagingSenderId: "50145468253",
+            appId: "1:50145468253:web:fa01555b548abd286552b4",
+            measurementId: "G-XM1WPS7ERR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let streamers = [];
+        let currentUser = { username: 'Admin', role: 'admin' };
         let currentFilter = 'all';
 
-        function saveToStorage() {
-            localStorage.setItem('viejos_locos_streamers', JSON.stringify(streamers));
-            localStorage.setItem('viejos_locos_users', JSON.stringify(users));
-            localStorage.setItem('viejos_locos_current_user', JSON.stringify(currentUser));
+        // Listen for Realtime Cloud Updates from Firestore
+        onSnapshot(collection(db, "streamers"), (snapshot) => {
+            streamers = [];
+            snapshot.forEach((docSnap) => {
+                streamers.push({ id: docSnap.id, ...docSnap.data() });
+            });
             renderAll();
-        }
+        }, (error) => {
+            console.error("Firestore Error:", error);
+        });
 
-        function switchTab(tab) {
+        window.switchTab = function(tab) {
             document.getElementById('tab-dashboard').classList.add('hidden');
             document.getElementById('tab-public').classList.add('hidden');
             document.getElementById('tab-widgets').classList.add('hidden');
-            document.getElementById('tab-users').classList.add('hidden');
             
             document.getElementById('btn-dashboard').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
             document.getElementById('btn-public').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
             document.getElementById('btn-widgets').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
-            document.getElementById('btn-users').className = 'hidden flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
-
-            if (currentUser.role === 'admin') {
-                document.getElementById('btn-users').classList.remove('hidden');
-            }
 
             if (tab === 'dashboard') {
                 document.getElementById('tab-dashboard').classList.remove('hidden');
@@ -392,14 +346,10 @@
                 document.getElementById('btn-widgets').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap';
                 updateWidgetCode();
                 populateAnnouncerDropdown();
-            } else if (tab === 'users' && currentUser.role === 'admin') {
-                document.getElementById('tab-users').classList.remove('hidden');
-                document.getElementById('btn-users').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap';
-                renderUsersTable();
             }
-        }
+        };
 
-        function filterPlatform(platform) {
+        window.filterPlatform = function(platform) {
             currentFilter = platform;
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer';
@@ -408,7 +358,7 @@
                 event.currentTarget.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-cyan-400 border border-cyan-500/50 cursor-pointer';
             }
             renderDashboard();
-        }
+        };
 
         function getPlatformMeta(platform) {
             switch(platform) {
@@ -443,13 +393,13 @@
             document.getElementById('stat-total').innerText = streamers.length;
             const liveCount = streamers.filter(s => s.isLive).length;
             document.getElementById('stat-live').innerText = liveCount;
-            const totalViewers = streamers.reduce((acc, s) => acc + (s.isLive ? s.viewers : 0), 0);
+            const totalViewers = streamers.reduce((acc, s) => acc + (s.isLive ? Number(s.viewers || 0) : 0), 0);
             document.getElementById('stat-viewers').innerText = totalViewers.toLocaleString();
 
             if (streamers.length === 0) {
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
-                document.getElementById('empty-state-text').innerText = currentUser.role === 'admin' ? 'Click the "Add Streamer" button above to start building your roster.' : 'Admin has not added any streamers yet.';
+                document.getElementById('empty-state-text').innerText = currentUser.role === 'admin' ? 'Click the "Add Streamer" button above to populate your database.' : 'No streamers added by Admin yet.';
                 return;
             } else {
                 emptyState.classList.add('hidden');
@@ -461,7 +411,6 @@
             }
 
             grid.innerHTML = filtered.map((s) => {
-                const actualIndex = streamers.indexOf(s);
                 const meta = getPlatformMeta(s.platform);
                 const isAdmin = currentUser.role === 'admin';
 
@@ -481,13 +430,13 @@
                                     </span>
                                 </div>
                             </div>
-                            <!-- STRICT ADMIN CHECK: Only admin can edit or delete streamers -->
+                            <!-- STRICT ADMIN CHECK: Only admin can edit or delete -->
                             ${isAdmin ? `
                             <div class="flex items-center space-x-1">
-                                <button type="button" onclick="editStreamer(${actualIndex})" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs cursor-pointer" title="Edit">
+                                <button type="button" onclick="editStreamer('${s.id}')" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs cursor-pointer" title="Edit">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
-                                <button type="button" onclick="deleteStreamer(${actualIndex})" class="w-8 h-8 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs cursor-pointer" title="Delete">
+                                <button type="button" onclick="deleteStreamer('${s.id}')" class="w-8 h-8 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs cursor-pointer" title="Delete">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -501,12 +450,12 @@
                             <div>
                                 <p class="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Status</p>
                                 <p class="text-xs font-bold ${s.isLive ? 'text-emerald-400' : 'text-slate-500'} mt-0.5">
-                                    ${s.isLive ? `LIVE NOW (${s.viewers.toLocaleString()} viewers)` : 'Offline'}
+                                    ${s.isLive ? `LIVE NOW (${Number(s.viewers || 0).toLocaleString()} viewers)` : 'Offline'}
                                 </p>
                             </div>
                             <!-- STRICT ADMIN CHECK: Only admin can toggle live status -->
                             ${isAdmin ? `
-                            <button type="button" onclick="toggleLive(${actualIndex})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${s.isLive ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'}">
+                            <button type="button" onclick="toggleLive('${s.id}',${s.isLive})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${s.isLive ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'}">
                                 ${s.isLive ? 'Set Offline' : 'Set Live'}
                             </button>
                             ` : `<span class="text-[11px] text-slate-500 italic">View Only</span>`}
@@ -517,7 +466,6 @@
                                 <span>Visit Channel</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
-                            <span class="text-[10px] text-slate-500 font-mono">ID: #${actualIndex + 1}</span>
                         </div>
                     </div>
                 `;
@@ -562,7 +510,7 @@
                         ${s.schedule ? `<p class="text-[11px] text-cyan-400 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i> ${s.schedule}</p>` : ''}
                         <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Current Viewers:</span>
-                            <span class="font-bold text-emerald-400"><i class="fa-solid fa-eye mr-1"></i> ${s.viewers.toLocaleString()}</span>
+                            <span class="font-bold text-emerald-400"><i class="fa-solid fa-eye mr-1"></i> ${Number(s.viewers || 0).toLocaleString()}</span>
                         </div>
                         <a href="${s.url}" target="_blank" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3 rounded-xl text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-500/20 transition-all">
                             <i class="fa-solid fa-play"></i>
@@ -576,88 +524,40 @@
         // Authentication & Session Management
         function updateSessionUI() {
             document.getElementById('session-username').innerText = currentUser.username;
-            document.getElementById('session-role').innerText = currentUser.role === 'admin' ? 'Owner / Admin' : 'Viewer Access';
+            document.getElementById('session-role').innerText = currentUser.role === 'admin' ? 'Owner / Admin' : 'Public Viewer';
             document.getElementById('session-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
         }
 
-        function openAuthModal() {
-            const select = document.getElementById('authSelectUser');
-            select.innerHTML = users.map(u => `<option value="${u.username}">${u.username} (${u.role.toUpperCase()})</option>`).join('');
-            select.value = currentUser.username;
+        window.openAuthModal = function() {
             document.getElementById('authModal').classList.remove('hidden');
-        }
+        };
 
-        function closeAuthModal() {
+        window.closeAuthModal = function() {
             document.getElementById('authModal').classList.add('hidden');
-        }
+        };
 
-        function handleLogin() {
-            const username = document.getElementById('authSelectUser').value;
+        window.handleLogin = function() {
+            const mode = document.getElementById('authSelectUser').value;
             const password = document.getElementById('authPassword').value;
-            const found = users.find(u => u.username === username);
 
-            if (found) {
-                if (found.role === 'admin' || found.password === password) {
-                    currentUser = found;
-                    saveToStorage();
-                    closeAuthModal();
-                    alert(`Logged in as ${currentUser.username} (${currentUser.role})`);
+            if (mode === 'Admin') {
+                if (password.length > 0) {
+                    currentUser = { username: 'Admin', role: 'admin' };
+                    alert('Logged in as Admin');
                 } else {
-                    alert('Incorrect password.');
+                    alert('Please enter a password.');
+                    return;
                 }
+            } else {
+                currentUser = { username: 'Visitor', role: 'viewer' };
+                alert('Switched to Public Viewer mode');
             }
-        }
+            closeAuthModal();
+            renderAll();
+        };
 
-        // Manage Users Table & Modal (Admin only)
-        function renderUsersTable() {
-            const tbody = document.getElementById('users-table-body');
-            tbody.innerHTML = users.map((u, i) => `
-                <tr class="border-b border-slate-800 hover:bg-slate-900/50">
-                    <td class="p-4 font-bold text-slate-200">${u.username}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] uppercase font-bold ${u.role === 'admin' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'bg-slate-800 text-slate-300'}">${u.role}</span></td>
-                    <td class="p-4 text-right">
-                        ${u.username !== 'Admin' ? `<button type="button" onclick="deleteUser(${i})" class="text-rose-400 hover:text-rose-300 text-xs cursor-pointer"><i class="fa-solid fa-trash"></i> Delete</button>` : '<span class="text-xs text-slate-600">Protected</span>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function openUserModal() {
-            document.getElementById('userForm').reset();
-            document.getElementById('userModal').classList.remove('hidden');
-        }
-
-        function closeUserModal() {
-            document.getElementById('userModal').classList.add('hidden');
-        }
-
-        function handleUserFormSubmit(event) {
-            event.preventDefault();
-            const username = document.getElementById('newUsername').value.trim();
-            const password = document.getElementById('newUserPassword').value;
-
-            if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-                alert('Username already exists.');
-                return;
-            }
-
-            users.push({ username, role: 'viewer', password });
-            saveToStorage();
-            closeUserModal();
-            renderUsersTable();
-            alert(`Account "${username}" created successfully!`);
-        }
-
-        function deleteUser(index) {
-            if (confirm(`Remove account ${users[index].username}?`)) {
-                users.splice(index, 1);
-                saveToStorage();
-                renderUsersTable();
-            }
-        }
-
-        // Streamer Modal & CRUD Actions (Strictly Admin Protected)
-        function openModal() {
+        // Streamer Modal & CRUD Actions (Admin Only)
+        window.openModal = function() {
             if (currentUser.role !== 'admin') {
                 alert('Access Denied: Only Admin can add streamers.');
                 return;
@@ -665,144 +565,109 @@
             document.getElementById('streamerModal').classList.remove('hidden');
             document.getElementById('modalTitle').innerText = 'Add New Streamer';
             document.getElementById('streamerForm').reset();
-            document.getElementById('editIndex').value = -1;
-        }
+            document.getElementById('editId').value = '';
+        };
 
-        function closeModal() {
+        window.closeModal = function() {
             document.getElementById('streamerModal').classList.add('hidden');
-        }
+        };
 
-        function toggleLive(index) {
-            if (currentUser.role !== 'admin') {
-                alert('Access Denied: Only Admin can modify stream status.');
-                return;
-            }
-            streamers[index].isLive = !streamers[index].isLive;
-            if (streamers[index].isLive) {
-                streamers[index].viewers = Math.floor(Math.random() * 850) + 45;
-            } else {
-                streamers[index].viewers = 0;
-            }
-            saveToStorage();
-        }
+        window.toggleLive = async function(id, currentStatus) {
+            if (currentUser.role !== 'admin') return;
+            const newStatus = !currentStatus;
+            const viewers = newStatus ? Math.floor(Math.random() * 850) + 45 : 0;
+            await updateDoc(doc(db, "streamers", id), { isLive: newStatus, viewers: viewers });
+        };
 
-        function deleteStreamer(index) {
-            if (currentUser.role !== 'admin') {
-                alert('Access Denied: Only Admin can delete streamers.');
-                return;
+        window.deleteStreamer = async function(id) {
+            if (currentUser.role !== 'admin') return;
+            if (confirm('Are you sure you want to remove this streamer from the cloud?')) {
+                await deleteDoc(doc(db, "streamers", id));
             }
-            if (confirm('Are you sure you want to remove this streamer?')) {
-                streamers.splice(index, 1);
-                saveToStorage();
-            }
-        }
+        };
 
-        function editStreamer(index) {
-            if (currentUser.role !== 'admin') {
-                alert('Access Denied: Only Admin can edit streamers.');
-                return;
-            }
-            const s = streamers[index];
+        window.editStreamer = function(id) {
+            if (currentUser.role !== 'admin') return;
+            const s = streamers.find(item => item.id === id);
+            if (!s) return;
             document.getElementById('modalTitle').innerText = 'Edit Streamer';
-            document.getElementById('editIndex').value = index;
+            document.getElementById('editId').value = s.id;
             document.getElementById('streamerName').value = s.name;
             document.getElementById('streamerPlatform').value = s.platform;
             document.getElementById('streamerUrl').value = s.url;
+            document.getElementById('streamerAvatarUrl').value = s.avatar;
             document.getElementById('streamerDesc').value = s.description || '';
             document.getElementById('streamerSchedule').value = s.schedule || '';
             document.getElementById('streamerModal').classList.remove('hidden');
-        }
+        };
 
-        function handleFormSubmit(event) {
+        window.handleFormSubmit = async function(event) {
             event.preventDefault();
-            if (currentUser.role !== 'admin') {
-                alert('Access Denied.');
-                return;
-            }
-            const editIdx = parseInt(document.getElementById('editIndex').value);
+            if (currentUser.role !== 'admin') return;
+
+            const editId = document.getElementById('editId').value;
             const name = document.getElementById('streamerName').value;
             const platform = document.getElementById('streamerPlatform').value;
             const url = document.getElementById('streamerUrl').value;
+            const avatar = document.getElementById('streamerAvatarUrl').value;
             const description = document.getElementById('streamerDesc').value;
             const schedule = document.getElementById('streamerSchedule').value;
-            const fileInput = document.getElementById('streamerAvatarFile');
 
-            let defaultAvatar = 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150';
-            if (editIdx >= 0) {
-                defaultAvatar = streamers[editIdx].avatar;
-            }
-
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    saveRecord(editIdx, name, platform, url, description, schedule, e.target.result);
-                };
-                reader.readAsDataURL(fileInput.files[0]);
+            if (editId) {
+                await updateDoc(doc(db, "streamers", editId), {
+                    name, platform, url, avatar, description, schedule
+                });
             } else {
-                saveRecord(editIdx, name, platform, url, description, schedule, defaultAvatar);
-            }
-        }
-
-        function saveRecord(editIdx, name, platform, url, description, schedule, avatar) {
-            if (editIdx >= 0) {
-                streamers[editIdx].name = name;
-                streamers[editIdx].platform = platform;
-                streamers[editIdx].url = url;
-                streamers[editIdx].description = description;
-                streamers[editIdx].schedule = schedule;
-                streamers[editIdx].avatar = avatar;
-            } else {
-                streamers.push({
-                    name, platform, url, description, schedule, avatar,
+                await addDoc(collection(db, "streamers"), {
+                    name, platform, url, avatar, description, schedule,
                     isLive: false,
                     viewers: 0
                 });
             }
             closeModal();
-            saveToStorage();
-        }
+        };
 
-        function updateWidgetCode() {
+        window.updateWidgetCode = function() {
             const theme = document.getElementById('widgetTheme').value;
             const code = `<div class="viejos-locos-embed" data-theme="${theme}">\n  <script src="${window.location.href.split('?')[0]}widget.js" async><\/script>\n</div>`;
             document.getElementById('widgetCodeOutput').value = code;
-        }
+        };
 
-        function copyWidgetCode() {
+        window.copyWidgetCode = function() {
             const textarea = document.getElementById('widgetCodeOutput');
             textarea.select();
             document.execCommand('copy');
             alert('Embed code copied to clipboard!');
-        }
+        };
 
-        function populateAnnouncerDropdown() {
+        window.populateAnnouncerDropdown = function() {
             const select = document.getElementById('announcerSelect');
             if (streamers.length === 0) {
                 select.innerHTML = '<option value="">No streamers available</option>';
                 document.getElementById('announcementOutput').value = 'Add streamers to generate announcements.';
                 return;
             }
-            select.innerHTML = streamers.map((s, i) => `<option value="${i}">${s.name} (${s.platform.toUpperCase()})</option>`).join('');
+            select.innerHTML = streamers.map((s) => `<option value="${s.id}">${s.name} (${s.platform.toUpperCase()})</option>`).join('');
             generateAnnouncement();
-        }
+        };
 
-        function generateAnnouncement() {
-            const idx = document.getElementById('announcerSelect').value;
-            if (idx === '' || !streamers[idx]) {
+        window.generateAnnouncement = function() {
+            const id = document.getElementById('announcerSelect').value;
+            const s = streamers.find(item => item.id === id);
+            if (!s) {
                 document.getElementById('announcementOutput').value = 'No streamer selected.';
                 return;
             }
-            const s = streamers[idx];
             const msg = `🚨 @everyone LOS VIEJOS LOCOS ALERTA DE STREAM! 🚨\n\n${s.name} is now LIVE on ${s.platform.toUpperCase()}${s.isLive ? ` with ${s.viewers} viewers` : ''}!\n${s.description ? `📝 ${s.description}\n` : ''}\nCome hang out and support the crew:\n🔗 ${s.url}\n\n#LosViejosLocos #${s.platform}`;
             document.getElementById('announcementOutput').value = msg;
-        }
+        };
 
-        function copyAnnouncement() {
+        window.copyAnnouncement = function() {
             const textarea = document.getElementById('announcementOutput');
             textarea.select();
             document.execCommand('copy');
             alert('Announcement copied to clipboard!');
-        }
+        };
 
         function renderAll() {
             updateSessionUI();
@@ -810,15 +675,7 @@
             if(!document.getElementById('tab-public').classList.contains('hidden')) {
                 renderPublicBoard();
             }
-            if(!document.getElementById('tab-users').classList.contains('hidden') && currentUser.role === 'admin') {
-                renderUsersTable();
-            }
         }
-
-        // Initialize App on Load
-        document.addEventListener('DOMContentLoaded', () => {
-            renderAll();
-        });
     </script>
 </body>
 </html>
