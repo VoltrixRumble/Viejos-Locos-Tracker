@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Viejos Locos - Stream Tracker & Crew Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        rumble: '#85C742',
+                        twitch: '#9146FF',
+                        youtube: '#FF0000',
+                        kick: '#53FC18',
+                        tiktok: '#FE2C55'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-brand { font-family: 'Orbitron', sans-serif; }
+        .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.25); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-rumble flex items-center justify-center glow-cyan">
+                    <i class="fa-solid fa-bolt text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-brand text-2xl font-black tracking-wider bg-gradient-to-r from-cyan-400 via-teal-300 to-rumble bg-clip-text text-transparent">LOS VIEJOS LOCOS</h1>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Live Stream Radar & Crew Hub</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- User Session Badge / Switcher -->
+                <div class="flex items-center space-x-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+                    <div id="session-avatar" class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">A</div>
+                    <div class="text-left hidden sm:block">
+                        <p id="session-username" class="text-xs font-bold text-slate-200">Admin</p>
+                        <p id="session-role" class="text-[10px] text-cyan-400 uppercase font-semibold">Owner / Full Access</p>
+                    </div>
+                    <button type="button" onclick="openAuthModal()" class="ml-2 text-xs text-slate-400 hover:text-slate-200 bg-slate-800 px-2 py-1 rounded-lg cursor-pointer" title="Switch Account">
+                        <i class="fa-solid fa-right-left"></i>
+                    </button>
+                </div>
+
+                <button type="button" id="add-streamer-btn" onclick="openModal()" class="hidden bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-400 hover:to-teal-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm items-center space-x-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Streamer</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Tabs & View -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Navigation Sub-bar -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div class="flex space-x-2 bg-slate-900 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
+                <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-users-viewfinder mr-2"></i> Dashboard
+                </button>
+                <button type="button" onclick="switchTab('public')" id="btn-public" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-tv mr-2"></i> Live Board
+                </button>
+                <button type="button" onclick="switchTab('widgets')" id="btn-widgets" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-code mr-2"></i> Widgets
+                </button>
+                <button type="button" onclick="switchTab('users')" id="btn-users" class="hidden flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-user-shield mr-2"></i> Manage Users
+                </button>
+            </div>
+
+            <div id="filter-container" class="flex items-center space-x-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+                <button type="button" onclick="filterPlatform('all')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-cyan-400 border border-cyan-500/50 cursor-pointer">All</button>
+                <button type="button" onclick="filterPlatform('rumble')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer">Rumble</button>
+                <button type="button" onclick="filterPlatform('twitch')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer">Twitch</button>
+                <button type="button" onclick="filterPlatform('youtube')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer">YouTube</button>
+                <button type="button" onclick="filterPlatform('kick')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer">Kick</button>
+                <button type="button" onclick="filterPlatform('tiktok')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer">TikTok</button>
+            </div>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="tab-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Total Creators</p>
+                        <h3 id="stat-total" class="text-3xl font-black font-brand mt-1 text-slate-100">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-cyan-400 text-xl"><i class="fa-solid fa-user-group"></i></div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Live Now</p>
+                        <h3 id="stat-live" class="text-3xl font-black font-brand mt-1 text-emerald-400">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xl"><i class="fa-solid fa-broadcast-tower"></i></div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Total Viewers</p>
+                        <h3 id="stat-viewers" class="text-3xl font-black font-brand mt-1 text-teal-400">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 text-xl"><i class="fa-solid fa-eye"></i></div>
+                </div>
+            </div>
+
+            <div id="streamers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            <div id="empty-state" class="hidden text-center py-20 bg-slate-900/30 border border-dashed border-slate-800 rounded-3xl">
+                <div class="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto text-slate-600 text-3xl mb-4">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-300">No Streamers Added Yet</h3>
+                <p id="empty-state-text" class="text-sm text-slate-500 max-w-sm mx-auto mt-1">Admin can add streamers to build the roster.</p>
+            </div>
+        </div>
+
+        <!-- TAB 2: PUBLIC LIVE BOARD -->
+        <div id="tab-public" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-8 rounded-3xl text-center space-y-3">
+                <span class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Los Viejos Locos Live Hub</span>
+                </span>
+                <h2 class="text-3xl font-black font-brand text-slate-100">Who's Broadcasting Right Now?</h2>
+                <p class="text-sm text-slate-400 max-w-xl mx-auto">Check active schedules, channel descriptions, and tune into live streams instantly.</p>
+            </div>
+            <div id="public-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <!-- TAB 3: WIDGETS & ANNOUNCEMENTS -->
+        <div id="tab-widgets" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                            <i class="fa-solid fa-code"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-200">Embed Widget Code</h3>
+                            <p class="text-xs text-slate-400">Generate code to embed this live roster on your website.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Select Theme</label>
+                        <select id="widgetTheme" onchange="updateWidgetCode()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200">
+                            <option value="dark">Dark Glassmorphism</option>
+                            <option value="cyber">Cyber Neon</option>
+                            <option value="minimal">Minimal Clean</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">HTML Embed Snippet</label>
+                        <textarea id="widgetCodeOutput" readonly rows="4" class="w-full bg-slate-950 font-mono text-xs text-cyan-300 border border-slate-800 rounded-xl p-3 select-all"></textarea>
+                    </div>
+                    <button type="button" onclick="copyWidgetCode()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Embed Code</span>
+                    </button>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-rumble/10 text-rumble flex items-center justify-center">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-200">Social Announcer</h3>
+                            <p class="text-xs text-slate-400">Generate ready-to-post announcements for Discord or X/Twitter.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Select Streamer to Announce</label>
+                        <select id="announcerSelect" onchange="generateAnnouncement()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Announcement Message</label>
+                        <textarea id="announcementOutput" readonly rows="4" class="w-full bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 rounded-xl p-3 select-all"></textarea>
+                    </div>
+                    <button type="button" onclick="copyAnnouncement()" class="w-full bg-rumble hover:bg-rumble/80 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>Copy Announcement</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: MANAGE USERS (Admin Only) -->
+        <div id="tab-users" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold font-brand text-slate-100">Editor Account Management</h2>
+                    <p class="text-xs text-slate-400">Create and manage editor accounts who can log in to help manage stream statuses.</p>
+                </div>
+                <button type="button" onclick="openUserModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Create Editor Account</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-800 bg-slate-950/50 text-xs text-slate-400 uppercase">
+                            <th class="p-4">Username</th>
+                            <th class="p-4">Role</th>
+                            <th class="p-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add / Edit Streamer -->
+    <div id="streamerModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 id="modalTitle" class="font-bold text-lg text-slate-100 font-brand">Add New Streamer</h3>
+                <button type="button" onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="streamerForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <input type="hidden" id="editIndex" value="-1">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Streamer / Channel Name</label>
+                    <input type="text" id="streamerName" required placeholder="e.g. Voltrix" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Platform</label>
+                        <select id="streamerPlatform" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                            <option value="rumble">Rumble</option>
+                            <option value="twitch">Twitch</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="kick">Kick</option>
+                            <option value="tiktok">TikTok</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Avatar Image or GIF</label>
+                        <input type="file" id="streamerAvatarFile" accept="image/png, image/jpeg, image/gif" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500 file:text-slate-950 hover:file:bg-cyan-400 cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Channel / Stream URL</label>
+                    <input type="url" id="streamerUrl" required placeholder="https://rumble.com/c/yourchannel" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Description (What do they stream?)</label>
+                    <textarea id="streamerDesc" rows="2" placeholder="Playing retro games, D&D campaigns, and community multiplayer..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Schedule (Optional)</label>
+                    <input type="text" id="streamerSchedule" placeholder="e.g., Tue, Thu, Sun @ 7:00 PM EST" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl text-sm transition-all cursor-pointer">Cancel</button>
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-400 hover:to-teal-500 text-slate-950 font-bold py-3 rounded-xl text-sm shadow-lg shadow-cyan-500/20 transition-all cursor-pointer">Save Streamer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Authentication & Account Switcher -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="font-bold text-lg text-slate-100 font-brand">Switch Account / Login</h3>
+                <button type="button" onclick="closeAuthModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Select Account</label>
+                    <select id="authSelectUser" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"></select>
+                </div>
+                <div id="authPasswordContainer">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="authPassword" placeholder="Enter account password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+                <button type="button" onclick="handleLogin()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-all cursor-pointer">Log In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Create / Edit Editor User -->
+    <div id="userModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="font-bold text-lg text-slate-100 font-brand">Create Editor Account</h3>
+                <button type="button" onclick="closeUserModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="userForm" onsubmit="handleUserFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Username</label>
+                    <input type="text" id="newUsername" required placeholder="e.g. EditorJohn" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="newUserPassword" required placeholder="Password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeUserModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl text-sm cursor-pointer">Cancel</button>
+                    <button type="submit" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-sm cursor-pointer">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-auto">
+        <p>Los Viejos Locos Stream Radar &bull; Built for creators and communities.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // State Initialization
+        let streamers = JSON.parse(localStorage.getItem('viejos_locos_streamers')) || [];
+        
+        // Users setup: Default Admin account + custom users stored in localStorage
+        let users = JSON.parse(localStorage.getItem('viejos_locos_users')) || [
+            { username: 'Admin', role: 'admin', password: 'password123' }
+        ];
+
+        let currentUser = JSON.parse(localStorage.getItem('viejos_locos_current_user')) || users[0];
+        let currentFilter = 'all';
+
+        function saveToStorage() {
+            localStorage.setItem('viejos_locos_streamers', JSON.stringify(streamers));
+            localStorage.setItem('viejos_locos_users', JSON.stringify(users));
+            localStorage.setItem('viejos_locos_current_user', JSON.stringify(currentUser));
+            renderAll();
+        }
+
+        function switchTab(tab) {
+            document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-public').classList.add('hidden');
+            document.getElementById('tab-widgets').classList.add('hidden');
+            document.getElementById('tab-users').classList.add('hidden');
+            
+            document.getElementById('btn-dashboard').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
+            document.getElementById('btn-public').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
+            document.getElementById('btn-widgets').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
+            document.getElementById('btn-users').className = 'hidden flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 cursor-pointer whitespace-nowrap';
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('btn-users').classList.remove('hidden');
+            }
+
+            if (tab === 'dashboard') {
+                document.getElementById('tab-dashboard').classList.remove('hidden');
+                document.getElementById('btn-dashboard').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap';
+            } else if (tab === 'public') {
+                document.getElementById('tab-public').classList.remove('hidden');
+                document.getElementById('btn-public').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap';
+                renderPublicBoard();
+            } else if (tab === 'widgets') {
+                document.getElementById('tab-widgets').classList.remove('hidden');
+                document.getElementById('btn-widgets').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap';
+                updateWidgetCode();
+                populateAnnouncerDropdown();
+            } else if (tab === 'users' && currentUser.role === 'admin') {
+                document.getElementById('tab-users').classList.remove('hidden');
+                document.getElementById('btn-users').className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap';
+                renderUsersTable();
+            }
+        }
+
+        function filterPlatform(platform) {
+            currentFilter = platform;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer';
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-cyan-400 border border-cyan-500/50 cursor-pointer';
+            }
+            renderDashboard();
+        }
+
+        function getPlatformMeta(platform) {
+            switch(platform) {
+                case 'rumble': return { name: 'Rumble', color: 'bg-rumble/10 text-rumble border-rumble/30', icon: 'fa-solid fa-video' };
+                case 'twitch': return { name: 'Twitch', color: 'bg-twitch/10 text-twitch border-twitch/30', icon: 'fa-brands fa-twitch' };
+                case 'youtube': return { name: 'YouTube', color: 'bg-youtube/10 text-youtube border-youtube/30', icon: 'fa-brands fa-youtube' };
+                case 'kick': return { name: 'Kick', color: 'bg-kick/10 text-kick border-kick/30', icon: 'fa-solid fa-k' };
+                case 'tiktok': return { name: 'TikTok', color: 'bg-tiktok/10 text-tiktok border-tiktok/30', icon: 'fa-brands fa-tiktok' };
+                default: return { name: 'Stream', color: 'bg-slate-800 text-slate-300 border-slate-700', icon: 'fa-solid fa-globe' };
+            }
+        }
+
+        function renderDashboard() {
+            const grid = document.getElementById('streamers-grid');
+            const emptyState = document.getElementById('empty-state');
+            const addBtn = document.getElementById('add-streamer-btn');
+            
+            // Permissions check
+            if (currentUser.role === 'admin') {
+                addBtn.classList.remove('hidden');
+                addBtn.classList.add('flex');
+            } else {
+                addBtn.classList.add('hidden');
+                addBtn.classList.remove('flex');
+            }
+
+            let filtered = streamers;
+            if (currentFilter !== 'all') {
+                filtered = streamers.filter(s => s.platform === currentFilter);
+            }
+
+            document.getElementById('stat-total').innerText = streamers.length;
+            const liveCount = streamers.filter(s => s.isLive).length;
+            document.getElementById('stat-live').innerText = liveCount;
+            const totalViewers = streamers.reduce((acc, s) => acc + (s.isLive ? s.viewers : 0), 0);
+            document.getElementById('stat-viewers').innerText = totalViewers.toLocaleString();
+
+            if (streamers.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                document.getElementById('empty-state-text').innerText = currentUser.role === 'admin' ? 'Click the "Add Streamer" button above to start.' : 'Admin has not added any streamers yet.';
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No streamers found for platform: ${currentFilter}</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((s) => {
+                const actualIndex = streamers.indexOf(s);
+                const meta = getPlatformMeta(s.platform);
+                const canEdit = currentUser.role === 'admin';
+
+                return `
+                    <div class="bg-slate-900 border ${s.isLive ? 'border-emerald-500/50 shadow-lg shadow-emerald-500/10' : 'border-slate-800'} rounded-3xl p-6 space-y-4 relative overflow-hidden transition-all">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="relative">
+                                    <img src="${s.avatar}" alt="${s.name}" class="w-14 h-14 rounded-2xl object-cover border border-slate-700">
+                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-900 ${s.isLive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}"></span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100 text-base">${s.name}</h4>
+                                    <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.color} mt-1">
+                                        <i class="${meta.icon}"></i>
+                                        <span>${meta.name}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            ${canEdit ? `
+                            <div class="flex items-center space-x-1">
+                                <button type="button" onclick="editStreamer(${actualIndex})" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs cursor-pointer" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button type="button" onclick="deleteStreamer(${actualIndex})" class="w-8 h-8 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs cursor-pointer" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        ${s.description ? `<p class="text-xs text-slate-300 line-clamp-2 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">${s.description}</p>` : ''}
+                        ${s.schedule ? `<p class="text-[11px] text-cyan-400 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i> ${s.schedule}</p>` : ''}
+
+                        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800/80">
+                            <div>
+                                <p class="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Status</p>
+                                <p class="text-xs font-bold ${s.isLive ? 'text-emerald-400' : 'text-slate-500'} mt-0.5">
+                                    ${s.isLive ? `LIVE NOW (${s.viewers.toLocaleString()} viewers)` : 'Offline'}
+                                </p>
+                            </div>
+                            <button type="button" onclick="toggleLive(${actualIndex})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${s.isLive ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'}">
+                                ${s.isLive ? 'Set Offline' : 'Set Live'}
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <a href="${s.url}" target="_blank" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1.5">
+                                <span>Visit Channel</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
+                            <span class="text-[10px] text-slate-500 font-mono">ID: #${actualIndex + 1}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderPublicBoard() {
+            const grid = document.getElementById('public-grid');
+            const liveStreamers = streamers.filter(s => s.isLive);
+
+            if (liveStreamers.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-slate-900/30 border border-slate-800 rounded-3xl space-y-3">
+                        <div class="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto text-slate-600 text-2xl">
+                            <i class="fa-solid fa-moon"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-300">All Creators Are Currently Offline</h3>
+                        <p class="text-xs text-slate-500">Check back soon or check scheduled broadcast times below!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = liveStreamers.map(s => {
+                const meta = getPlatformMeta(s.platform);
+                return `
+                    <div class="bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 space-y-4 shadow-xl shadow-emerald-500/5 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-emerald-500 text-slate-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-bl-xl">
+                            LIVE
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <img src="${s.avatar}" alt="${s.name}" class="w-14 h-14 rounded-2xl object-cover border border-slate-700">
+                            <div>
+                                <h4 class="font-bold text-slate-100 text-base">${s.name}</h4>
+                                <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.color} mt-1">
+                                    <i class="${meta.icon}"></i>
+                                    <span>${meta.name}</span>
+                                </span>
+                            </div>
+                        </div>
+                        ${s.description ? `<p class="text-xs text-slate-300 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">${s.description}</p>` : ''}
+                        ${s.schedule ? `<p class="text-[11px] text-cyan-400 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i> ${s.schedule}</p>` : ''}
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Current Viewers:</span>
+                            <span class="font-bold text-emerald-400"><i class="fa-solid fa-eye mr-1"></i> ${s.viewers.toLocaleString()}</span>
+                        </div>
+                        <a href="${s.url}" target="_blank" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3 rounded-xl text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-500/20 transition-all">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Watch Stream Now</span>
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Authentication & Session Management
+        function updateSessionUI() {
+            document.getElementById('session-username').innerText = currentUser.username;
+            document.getElementById('session-role').innerText = currentUser.role === 'admin' ? 'Owner / Admin' : 'Editor Access';
+            document.getElementById('session-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
+        }
+
+        function openAuthModal() {
+            const select = document.getElementById('authSelectUser');
+            select.innerHTML = users.map(u => `<option value="${u.username}">${u.username} (${u.role.toUpperCase()})</option>`).join('');
+            select.value = currentUser.username;
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('authSelectUser').value;
+            const password = document.getElementById('authPassword').value;
+            const found = users.find(u => u.username === username);
+
+            if (found) {
+                if (found.role === 'admin' || found.password === password) {
+                    currentUser = found;
+                    saveToStorage();
+                    closeAuthModal();
+                    alert(`Logged in as ${currentUser.username} (${currentUser.role})`);
+                } else {
+                    alert('Incorrect password.');
+                }
+            }
+        }
+
+        // Manage Users Table & Modal (Admin only)
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = users.map((u, i) => `
+                <tr class="border-b border-slate-800 hover:bg-slate-900/50">
+                    <td class="p-4 font-bold text-slate-200">${u.username}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] uppercase font-bold ${u.role === 'admin' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'bg-slate-800 text-slate-300'}">${u.role}</span></td>
+                    <td class="p-4 text-right">
+                        ${u.username !== 'Admin' ? `<button type="button" onclick="deleteUser(${i})" class="text-rose-400 hover:text-rose-300 text-xs cursor-pointer"><i class="fa-solid fa-trash"></i> Delete</button>` : '<span class="text-xs text-slate-600">Protected</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openUserModal() {
+            document.getElementById('userForm').reset();
+            document.getElementById('userModal').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.add('hidden');
+        }
+
+        function handleUserFormSubmit(event) {
+            event.preventDefault();
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newUserPassword').value;
+
+            if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                alert('Username already exists.');
+                return;
+            }
+
+            users.push({ username, role: 'editor', password });
+            saveToStorage();
+            closeUserModal();
+            renderUsersTable();
+            alert(`Editor account "${username}" created successfully!`);
+        }
+
+        function deleteUser(index) {
+            if (confirm(`Remove editor account ${users[index].username}?`)) {
+                users.splice(index, 1);
+                saveToStorage();
+                renderUsersTable();
+            }
+        }
+
+        // Streamer Modal & CRUD Actions
+        function openModal() {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin can add streamers.');
+                return;
+            }
+            document.getElementById('streamerModal').classList.remove('hidden');
+            document.getElementById('modalTitle').innerText = 'Add New Streamer';
+            document.getElementById('streamerForm').reset();
+            document.getElementById('editIndex').value = -1;
+        }
+
+        function closeModal() {
+            document.getElementById('streamerModal').classList.add('hidden');
+        }
+
+        function toggleLive(index) {
+            streamers[index].isLive = !streamers[index].isLive;
+            if (streamers[index].isLive) {
+                streamers[index].viewers = Math.floor(Math.random() * 850) + 45;
+            } else {
+                streamers[index].viewers = 0;
+            }
+            saveToStorage();
+        }
+
+        function deleteStreamer(index) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin can delete streamers.');
+                return;
+            }
+            if (confirm('Are you sure you want to remove this streamer?')) {
+                streamers.splice(index, 1);
+                saveToStorage();
+            }
+        }
+
+        function editStreamer(index) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin can edit streamers.');
+                return;
+            }
+            const s = streamers[index];
+            document.getElementById('modalTitle').innerText = 'Edit Streamer';
+            document.getElementById('editIndex').value = index;
+            document.getElementById('streamerName').value = s.name;
+            document.getElementById('streamerPlatform').value = s.platform;
+            document.getElementById('streamerUrl').value = s.url;
+            document.getElementById('streamerDesc').value = s.description || '';
+            document.getElementById('streamerSchedule').value = s.schedule || '';
+            document.getElementById('streamerModal').classList.remove('hidden');
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const editIdx = parseInt(document.getElementById('editIndex').value);
+            const name = document.getElementById('streamerName').value;
+            const platform = document.getElementById('streamerPlatform').value;
+            const url = document.getElementById('streamerUrl').value;
+            const description = document.getElementById('streamerDesc').value;
+            const schedule = document.getElementById('streamerSchedule').value;
+            const fileInput = document.getElementById('streamerAvatarFile');
+
+            let defaultAvatar = 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150';
+            if (editIdx >= 0) {
+                defaultAvatar = streamers[editIdx].avatar;
+            }
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    saveRecord(editIdx, name, platform, url, description, schedule, e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveRecord(editIdx, name, platform, url, description, schedule, defaultAvatar);
+            }
+        }
+
+        function saveRecord(editIdx, name, platform, url, description, schedule, avatar) {
+            if (editIdx >= 0) {
+                streamers[editIdx].name = name;
+                streamers[editIdx].platform = platform;
+                streamers[editIdx].url = url;
+                streamers[editIdx].description = description;
+                streamers[editIdx].schedule = schedule;
+                streamers[editIdx].avatar = avatar;
+            } else {
+                streamers.push({
+                    name, platform, url, description, schedule, avatar,
+                    isLive: false,
+                    viewers: 0
+                });
+            }
+            closeModal();
+            saveToStorage();
+        }
+
+        function updateWidgetCode() {
+            const theme = document.getElementById('widgetTheme').value;
+            const code = `<div class="viejos-locos-embed" data-theme="${theme}">\n  <script src="${window.location.href.split('?')[0]}widget.js" async><\/script>\n</div>`;
+            document.getElementById('widgetCodeOutput').value = code;
+        }
+
+        function copyWidgetCode() {
+            const textarea = document.getElementById('widgetCodeOutput');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Embed code copied to clipboard!');
+        }
+
+        function populateAnnouncerDropdown() {
+            const select = document.getElementById('announcerSelect');
+            if (streamers.length === 0) {
+                select.innerHTML = '<option value="">No streamers available</option>';
+                document.getElementById('announcementOutput').value = 'Add streamers to generate announcements.';
+                return;
+            }
+            select.innerHTML = streamers.map((s, i) => `<option value="${i}">${s.name} (${s.platform.toUpperCase()})</option>`).join('');
+            generateAnnouncement();
+        }
+
+        function generateAnnouncement() {
+            const idx = document.getElementById('announcerSelect').value;
+            if (idx === '' || !streamers[idx]) {
+                document.getElementById('announcementOutput').value = 'No streamer selected.';
+                return;
+            }
+            const s = streamers[idx];
+            const msg = `🚨 @everyone LOS VIEJOS LOCOS ALERTA DE STREAM! 🚨\n\n${s.name} is now LIVE on ${s.platform.toUpperCase()}${s.isLive ? ` with ${s.viewers} viewers` : ''}!\n${s.description ? `📝 ${s.description}\n` : ''}\nCome hang out and support the crew:\n🔗 ${s.url}\n\n#LosViejosLocos #${s.platform}`;
+            document.getElementById('announcementOutput').value = msg;
+        }
+
+        function copyAnnouncement() {
+            const textarea = document.getElementById('announcementOutput');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Announcement copied to clipboard!');
+        }
+
+        function renderAll() {
+            updateSessionUI();
+            renderDashboard();
+            if(!document.getElementById('tab-public').classList.contains('hidden')) {
+                renderPublicBoard();
+            }
+            if(!document.getElementById('tab-users').classList.contains('hidden') && currentUser.role === 'admin') {
+                renderUsersTable();
+            }
+        }
+
+        // Initialize App on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+    </script>
+</body>
+</html>
