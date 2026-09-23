@@ -31,7 +31,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
 
-    <!-- Header -->
     <header class="border-b border-slate-800 bg-slate-900/85 backdrop-blur sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -45,7 +44,6 @@
             </div>
             
             <div class="flex items-center space-x-3">
-                <!-- User Session Badge / Switcher -->
                 <div class="flex items-center space-x-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
                     <div id="session-avatar" class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">V</div>
                     <div class="text-left hidden sm:block">
@@ -57,7 +55,6 @@
                     </button>
                 </div>
 
-                <!-- Admin-Only Add Streamer Button -->
                 <button type="button" id="add-streamer-btn" onclick="openModal()" class="hidden bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-400 hover:to-teal-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm items-center space-x-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer">
                     <i class="fa-solid fa-plus"></i>
                     <span>Add Streamer</span>
@@ -66,10 +63,8 @@
         </div>
     </header>
 
-    <!-- Main Content Tabs & View -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        <!-- Navigation Sub-bar -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4">
             <div class="flex space-x-2 bg-slate-900 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
                 <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-cyan-500 text-slate-950 shadow cursor-pointer whitespace-nowrap">
@@ -93,7 +88,6 @@
             </div>
         </div>
 
-        <!-- TAB 1: DASHBOARD -->
         <div id="tab-dashboard" class="space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
@@ -130,7 +124,6 @@
             </div>
         </div>
 
-        <!-- TAB 2: PUBLIC LIVE BOARD -->
         <div id="tab-public" class="hidden space-y-6">
             <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-8 rounded-3xl text-center space-y-3">
                 <span class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider">
@@ -143,7 +136,6 @@
             <div id="public-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- TAB 3: WIDGETS & ANNOUNCEMENTS -->
         <div id="tab-widgets" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
@@ -201,7 +193,6 @@
         </div>
     </main>
 
-    <!-- Modal: Add / Edit Streamer (Admin Only) -->
     <div id="streamerModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -231,7 +222,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Upload Image / GIF or URL</label>
-                        <input type="file" id="streamerAvatarFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500 file:text-slate-950 hover:file:bg-cyan-400 file:cursor-pointer cursor-pointer mb-2">
+                        <input type="file" id="streamerAvatarFile" accept="image/gif,image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500 file:text-slate-950 hover:file:bg-cyan-400 file:cursor-pointer cursor-pointer mb-2">
                         <input type="text" id="streamerAvatarUrl" placeholder="Or paste image/GIF URL" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
                     </div>
                 </div>
@@ -259,7 +250,6 @@
         </div>
     </div>
 
-    <!-- Modal: Authentication & Account Switcher -->
     <div id="authModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-6 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -292,12 +282,10 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-auto">
         <p>Los Viejos Locos Stream Radar &bull; Cloud Powered.</p>
     </footer>
 
-    <!-- Main Application Scripts -->
     <script>
         const STORAGE_KEY = 'los_viejos_locos_streamers_v1';
         let streamers = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
@@ -319,8 +307,12 @@
         let uploadedAvatarData = '';
 
         function saveToLocalStorage() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(streamers));
-            renderAll();
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(streamers));
+                renderAll();
+            } catch (err) {
+                alert('Storage limit reached! Animated GIF sizes can be large. Try using a smaller GIF file or paste an image URL instead.');
+            }
         }
 
         window.handleImageUpload = function(event) {
@@ -374,358 +366,4 @@
                 case 'rumble': return { name: 'Rumble', color: 'bg-rumble/10 text-rumble border-rumble/30', icon: 'fa-solid fa-video' };
                 case 'twitch': return { name: 'Twitch', color: 'bg-twitch/10 text-twitch border-twitch/30', icon: 'fa-brands fa-twitch' };
                 case 'youtube': return { name: 'YouTube', color: 'bg-youtube/10 text-youtube border-youtube/30', icon: 'fa-brands fa-youtube' };
-                case 'kick': return { name: 'Kick', color: 'bg-kick/10 text-kick border-kick/30', icon: 'fa-solid fa-k' };
-                case 'tiktok': return { name: 'TikTok', color: 'bg-tiktok/10 text-tiktok border-tiktok/30', icon: 'fa-brands fa-tiktok' };
-                default: return { name: 'Stream', color: 'bg-slate-800 text-slate-300 border-slate-700', icon: 'fa-solid fa-globe' };
-            }
-        }
-
-        function renderDashboard() {
-            const grid = document.getElementById('streamers-grid');
-            const emptyState = document.getElementById('empty-state');
-            const addBtn = document.getElementById('add-streamer-btn');
-            
-            if (currentUser.role === 'admin') {
-                addBtn.classList.remove('hidden');
-                addBtn.classList.add('flex');
-            } else {
-                addBtn.classList.add('hidden');
-                addBtn.classList.remove('flex');
-            }
-
-            let filtered = streamers;
-            if (currentFilter !== 'all') {
-                filtered = streamers.filter(s => s.platform === currentFilter);
-            }
-
-            document.getElementById('stat-total').innerText = streamers.length;
-            const liveCount = streamers.filter(s => s.isLive).length;
-            document.getElementById('stat-live').innerText = liveCount;
-            const totalViewers = streamers.reduce((acc, s) => acc + (s.isLive ? Number(s.viewers || 0) : 0), 0);
-            document.getElementById('stat-viewers').innerText = totalViewers.toLocaleString();
-
-            if (streamers.length === 0) {
-                grid.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                document.getElementById('empty-state-text').innerText = currentUser.role === 'admin' ? 'Click the "Add Streamer" button above to populate your database.' : 'No streamers added by Admin yet.';
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No streamers found for platform: ${currentFilter}</div>`;
-                return;
-            }
-
-            grid.innerHTML = filtered.map((s) => {
-                const meta = getPlatformMeta(s.platform);
-                const isAdmin = currentUser.role === 'admin';
-
-                return `
-                    <div class="bg-slate-900 border ${s.isLive ? 'border-emerald-500/50 shadow-lg shadow-emerald-500/10' : 'border-slate-800'} rounded-3xl p-6 space-y-4 relative overflow-hidden transition-all">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="relative">
-                                    <img src="${s.avatar}" alt="${s.name}" class="w-14 h-14 rounded-2xl object-cover border border-slate-700">
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-900 ${s.isLive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}"></span>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-100 text-base">${s.name}</h4>
-                                    <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.color} mt-1">
-                                        <i class="${meta.icon}"></i>
-                                        <span>${meta.name}</span>
-                                    </span>
-                                </div>
-                            </div>
-                            ${isAdmin ? `
-                            <div class="flex items-center space-x-1">
-                                <button type="button" onclick="editStreamer('${s.id}')" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs cursor-pointer" title="Edit">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button type="button" onclick="deleteStreamer('${s.id}')" class="w-8 h-8 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs cursor-pointer" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                            ` : ''}
-                        </div>
-
-                        ${s.description ? `<p class="text-xs text-slate-300 line-clamp-2 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">${s.description}</p>` : ''}
-                        ${s.schedule ? `<p class="text-[11px] text-cyan-400 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i> ${s.schedule}</p>` : ''}
-
-                        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                            <div>
-                                <p class="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Status</p>
-                                <p class="text-xs font-bold ${s.isLive ? 'text-emerald-400' : 'text-slate-500'} mt-0.5">
-                                    ${s.isLive ? `LIVE NOW (${Number(s.viewers || 0).toLocaleString()} viewers)` : 'Offline'}
-                                </p>
-                            </div>
-                            ${isAdmin ? `
-                            <button type="button" onclick="toggleLive('${s.id}')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${s.isLive ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'}">
-                                ${s.isLive ? 'Set Offline' : 'Set Live'}
-                            </button>
-                            ` : `<span class="text-[11px] text-slate-500 italic">View Only</span>`}
-                        </div>
-
-                        <div class="flex items-center justify-between pt-1">
-                            <a href="${s.url}" target="_blank" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1.5">
-                                <span>Visit Channel</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderPublicBoard() {
-            const grid = document.getElementById('public-grid');
-            const liveStreamers = streamers.filter(s => s.isLive);
-
-            if (liveStreamers.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-16 bg-slate-900/30 border border-slate-800 rounded-3xl space-y-3">
-                        <div class="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto text-slate-600 text-2xl">
-                            <i class="fa-solid fa-moon"></i>
-                        </div>
-                        <h3 class="font-bold text-slate-300">All Creators Are Currently Offline</h3>
-                        <p class="text-xs text-slate-500">Check back soon or check scheduled broadcast times below!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = liveStreamers.map(s => {
-                const meta = getPlatformMeta(s.platform);
-                return `
-                    <div class="bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 space-y-4 shadow-xl shadow-emerald-500/5 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-emerald-500 text-slate-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-bl-xl">
-                            LIVE
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <img src="${s.avatar}" alt="${s.name}" class="w-14 h-14 rounded-2xl object-cover border border-slate-700">
-                            <div>
-                                <h4 class="font-bold text-slate-100 text-base">${s.name}</h4>
-                                <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.color} mt-1">
-                                    <i class="${meta.icon}"></i>
-                                    <span>${meta.name}</span>
-                                </span>
-                            </div>
-                        </div>
-                        ${s.description ? `<p class="text-xs text-slate-300 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">${s.description}</p>` : ''}
-                        ${s.schedule ? `<p class="text-[11px] text-cyan-400 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i> ${s.schedule}</p>` : ''}
-                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-                            <span class="text-slate-400">Current Viewers:</span>
-                            <span class="font-bold text-emerald-400"><i class="fa-solid fa-eye mr-1"></i> ${Number(s.viewers || 0).toLocaleString()}</span>
-                        </div>
-                        <a href="${s.url}" target="_blank" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3 rounded-xl text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-500/20 transition-all">
-                            <i class="fa-solid fa-play"></i>
-                            <span>Watch Stream Now</span>
-                        </a>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateSessionUI() {
-            document.getElementById('session-username').innerText = currentUser.username;
-            document.getElementById('session-role').innerText = currentUser.role === 'admin' ? 'Owner / Admin' : 'Public Viewer';
-            document.getElementById('session-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
-        }
-
-        window.openAuthModal = function() {
-            document.getElementById('authModal').classList.remove('hidden');
-        };
-
-        window.closeAuthModal = function() {
-            document.getElementById('authModal').classList.add('hidden');
-        };
-
-        window.toggleAuthFields = function() {
-            const mode = document.getElementById('authSelectUser').value;
-            const fields = document.getElementById('adminFields');
-            if (mode === 'Admin') {
-                fields.classList.remove('hidden');
-            } else {
-                fields.classList.add('hidden');
-            }
-        };
-
-        window.handleLoginSubmit = function(event) {
-            event.preventDefault();
-            const mode = document.getElementById('authSelectUser').value;
-
-            if (mode === 'Admin') {
-                const usernameInput = document.getElementById('authUsernameInput').value.trim();
-                const passwordInput = document.getElementById('authPassword').value;
-
-                if (usernameInput === 'Voltrix' && passwordInput === 'Cristo2026!') {
-                    currentUser = { username: 'Voltrix', role: 'admin' };
-                    alert('Successfully logged in as Admin (Voltrix)');
-                } else {
-                    alert('Invalid Admin username or password.');
-                    return;
-                }
-            } else {
-                currentUser = { username: 'Visitor', role: 'viewer' };
-                alert('Switched to Public Viewer mode');
-            }
-            
-            document.getElementById('authForm').reset();
-            toggleAuthFields();
-            closeAuthModal();
-            renderAll();
-        };
-
-        window.openModal = function() {
-            if (currentUser.role !== 'admin') {
-                alert('Access Denied: Only Admin can add streamers.');
-                return;
-            }
-            document.getElementById('streamerModal').classList.remove('hidden');
-            document.getElementById('modalTitle').innerText = 'Add New Streamer';
-            document.getElementById('streamerForm').reset();
-            document.getElementById('editId').value = '';
-            uploadedAvatarData = '';
-        };
-
-        window.closeModal = function() {
-            document.getElementById('streamerModal').classList.add('hidden');
-        };
-
-        window.toggleLive = function(id) {
-            if (currentUser.role !== 'admin') return;
-            streamers = streamers.map(s => {
-                if (s.id === id) {
-                    const newStatus = !s.isLive;
-                    return {
-                        ...s,
-                        isLive: newStatus,
-                        viewers: newStatus ? Math.floor(Math.random() * 850) + 45 : 0
-                    };
-                }
-                return s;
-            });
-            saveToLocalStorage();
-        };
-
-        window.deleteStreamer = function(id) {
-            if (currentUser.role !== 'admin') return;
-            if (confirm('Are you sure you want to remove this streamer?')) {
-                streamers = streamers.filter(s => s.id !== id);
-                saveToLocalStorage();
-            }
-        };
-
-        window.editStreamer = function(id) {
-            if (currentUser.role !== 'admin') return;
-            const s = streamers.find(item => item.id === id);
-            if (!s) return;
-            document.getElementById('modalTitle').innerText = 'Edit Streamer';
-            document.getElementById('editId').value = s.id;
-            document.getElementById('streamerName').value = s.name;
-            document.getElementById('streamerPlatform').value = s.platform;
-            document.getElementById('streamerUrl').value = s.url;
-            document.getElementById('streamerAvatarUrl').value = s.avatar.startsWith('data:') ? '' : s.avatar;
-            document.getElementById('streamerDesc').value = s.description || '';
-            document.getElementById('streamerSchedule').value = s.schedule || '';
-            uploadedAvatarData = s.avatar.startsWith('data:') ? s.avatar : '';
-            document.getElementById('streamerModal').classList.remove('hidden');
-        };
-
-        window.handleFormSubmit = function(event) {
-            event.preventDefault();
-            if (currentUser.role !== 'admin') return;
-
-            const editId = document.getElementById('editId').value;
-            const name = document.getElementById('streamerName').value.trim();
-            const platform = document.getElementById('streamerPlatform').value;
-            const url = document.getElementById('streamerUrl').value.trim();
-            const urlInput = document.getElementById('streamerAvatarUrl').value.trim();
-            const description = document.getElementById('streamerDesc').value.trim();
-            const schedule = document.getElementById('streamerSchedule').value.trim();
-
-            let avatar = uploadedAvatarData || urlInput;
-            if (!avatar && editId) {
-                const existing = streamers.find(s => s.id === editId);
-                if (existing) avatar = existing.avatar;
-            }
-            if (!avatar) {
-                avatar = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150';
-            }
-
-            if (editId) {
-                streamers = streamers.map(s => s.id === editId ? { ...s, name, platform, url, avatar, description, schedule } : s);
-            } else {
-                const newStreamer = {
-                    id: Date.now().toString(),
-                    name,
-                    platform,
-                    url,
-                    avatar,
-                    description,
-                    schedule,
-                    isLive: false,
-                    viewers: 0
-                };
-                streamers.push(newStreamer);
-            }
-            
-            saveToLocalStorage();
-            closeModal();
-        };
-
-        window.updateWidgetCode = function() {
-            const theme = document.getElementById('widgetTheme').value;
-            const code = `<div class="viejos-locos-embed" data-theme="${theme}">\n  <script src="${window.location.href.split('?')[0]}widget.js" async><\/script>\n</div>`;
-            document.getElementById('widgetCodeOutput').value = code;
-        };
-
-        window.copyWidgetCode = function() {
-            const textarea = document.getElementById('widgetCodeOutput');
-            textarea.select();
-            document.execCommand('copy');
-            alert('Embed code copied to clipboard!');
-        };
-
-        window.populateAnnouncerDropdown = function() {
-            const select = document.getElementById('announcerSelect');
-            if (streamers.length === 0) {
-                select.innerHTML = '<option value="">No streamers available</option>';
-                document.getElementById('announcementOutput').value = 'Add streamers to generate announcements.';
-                return;
-            }
-            select.innerHTML = streamers.map((s) => `<option value="${s.id}">${s.name} (${s.platform.toUpperCase()})</option>`).join('');
-            generateAnnouncement();
-        };
-
-        window.generateAnnouncement = function() {
-            const id = document.getElementById('announcerSelect').value;
-            const s = streamers.find(item => item.id === id);
-            if (!s) {
-                document.getElementById('announcementOutput').value = 'No streamer selected.';
-                return;
-            }
-            const msg = `🚨 @everyone LOS VIEJOS LOCOS ALERTA DE STREAM! 🚨\n\n${s.name} is now LIVE on ${s.platform.toUpperCase()}${s.isLive ? ` with ${s.viewers} viewers` : ''}!\n${s.description ? `📝 ${s.description}\n` : ''}\nCome hang out and support the crew:\n🔗 ${s.url}\n\n#LosViejosLocos #${s.platform}`;
-            document.getElementById('announcementOutput').value = msg;
-        };
-
-        window.copyAnnouncement = function() {
-            const textarea = document.getElementById('announcementOutput');
-            textarea.select();
-            document.execCommand('copy');
-            alert('Announcement copied to clipboard!');
-        };
-
-        function renderAll() {
-            updateSessionUI();
-            renderDashboard();
-            if(!document.getElementById('tab-public').classList.contains('hidden')) {
-                renderPublicBoard();
-            }
-        }
-
-        renderAll();
-    </script>
-</body>
-</html>
+                case 'kick': return { name: 'Kick', color: 'bg-kick/10 text-kick border-kick/30', icon:
